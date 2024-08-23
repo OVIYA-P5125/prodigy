@@ -1,7 +1,7 @@
-pip install dalle-mini
 from dalle_mini import DalleBart, DalleBartProcessor
 import torch
 from PIL import Image
+import numpy as np
 import requests
 from io import BytesIO
 
@@ -12,11 +12,20 @@ processor = DalleBartProcessor.from_pretrained("dalle-mini/dalle-mini/mini-1:lat
 # Define your text prompt
 prompt = "A futuristic cityscape with flying cars"
 
-# Process the prompt and generate the image
+# Process the prompt
 inputs = processor(prompt, return_tensors="pt")
-with torch.no_grad():
-    generated_images = model.generate(**inputs)
 
-# Decode and display the image
-image = Image.open(BytesIO(generated_images[0].numpy()))
-image.show()
+# Generate the image
+with torch.no_grad():
+    generated_ids = model.generate(**inputs)
+
+# Convert generated IDs to image
+# Note: The generated IDs need to be decoded into an image format
+image = processor.decode(generated_ids[0], skip_special_tokens=True)
+
+# Save and display the image
+image_pil = Image.open(BytesIO(image))
+image_pil.save("generated_image.png")
+image_pil.show()
+
+print("Image has been saved as 'generated_image.png'.")
