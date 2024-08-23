@@ -1,0 +1,22 @@
+pip install dalle-mini
+from dalle_mini import DalleBart, DalleBartProcessor
+import torch
+from PIL import Image
+import requests
+from io import BytesIO
+
+# Load the model and processor
+model = DalleBart.from_pretrained("dalle-mini/dalle-mini/mini-1:latest")
+processor = DalleBartProcessor.from_pretrained("dalle-mini/dalle-mini/mini-1:latest")
+
+# Define your text prompt
+prompt = "A futuristic cityscape with flying cars"
+
+# Process the prompt and generate the image
+inputs = processor(prompt, return_tensors="pt")
+with torch.no_grad():
+    generated_images = model.generate(**inputs)
+
+# Decode and display the image
+image = Image.open(BytesIO(generated_images[0].numpy()))
+image.show()
